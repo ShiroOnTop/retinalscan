@@ -7,6 +7,6 @@ pillow
 tqdm
 seaborn
 streamlit
-opencv-python
+opencv-python-headless
 numpy
 gdown
