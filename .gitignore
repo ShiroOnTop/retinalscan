@@ -1,0 +1,7 @@
+*.pth
+dataset/
+data/
+train/
+test/
+*.csv
+__pycache__/
