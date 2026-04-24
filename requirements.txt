@@ -4,7 +4,7 @@ flask
 gunicorn
 torch==2.1.0+cpu
 torchvision==0.16.0+cpu
-numpy
+numpy==1.26.4
 pillow
 opencv-python-headless
 gdown
