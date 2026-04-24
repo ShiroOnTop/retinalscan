@@ -19,8 +19,10 @@ from model import build_model
 from utils import load_checkpoint
 
 # ── Config ───────────────────────────────────────────────────────────
-MODEL_PATH = 'saved_model/best_model.pth'
-PORT       = 8501
+MODEL_PATH = "saved_model/best_model.pth"
+GOOGLE_DRIVE_FILE_ID = "11vq3--8cdxDyc2rJBOctQpRF6-q7EpAO"
+
+PORT = int(os.environ.get("PORT", 8501))
 
 CLASS_NAMES  = ['0_No_DR', '1_Mild', '2_Moderate', '3_Severe', '4_PDR']
 CLASS_LABELS = {
@@ -147,13 +149,33 @@ def get_tta_tensors(processed_img):
 app    = Flask(__name__)
 _model = None
 
+def download_model_if_missing():
+    if os.path.exists(MODEL_PATH):
+        return
+
+    import gdown
+
+    os.makedirs("saved_model", exist_ok=True)
+
+    url = f"https://drive.google.com/uc?id={GOOGLE_DRIVE_FILE_ID}"
+
+    print("Downloading model from Google Drive...")
+    gdown.download(url, MODEL_PATH, quiet=False)
+
+    if not os.path.exists(MODEL_PATH):
+        raise FileNotFoundError("Model download failed.")
+
 def get_model():
     global _model
-    if _model is None and os.path.exists(MODEL_PATH):
+
+    if _model is None:
+        download_model_if_missing()
+
         m = build_model(pretrained=False)
         m = load_checkpoint(m, MODEL_PATH)
         m.eval()
         _model = m
+
     return _model
 
 def predict_pil(image: Image.Image):
@@ -192,7 +214,11 @@ def img_to_b64(image: Image.Image, max_size=600) -> str:
 # ── API routes ────────────────────────────────────────────────────────
 @app.route('/api/status')
 def api_status():
-    return jsonify({'model_ready': os.path.exists(MODEL_PATH)})
+    try:
+        download_model_if_missing()
+        return jsonify({'model_ready': os.path.exists(MODEL_PATH)})
+    except Exception as e:
+        return jsonify({'model_ready': False, 'error': str(e)})
 
 @app.route('/api/predict', methods=['POST'])
 def api_predict():
