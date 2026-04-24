@@ -139,6 +139,8 @@ def to_tensor_norm(img):
     return NORMALIZE(transforms.ToTensor()(img))
 
 def get_tta_tensors(processed_img):
+    img = processed_img.resize((224, 224), Image.BILINEAR)
+    return torch.stack([to_tensor_norm(img)])  # ONLY 1 IMAGE
     """
     4-variant TTA: original + H-flip + V-flip + H+V flip.
     Averaging these 4 predictions gives +1-2% F1 improvement.
