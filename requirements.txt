@@ -8,3 +8,8 @@ numpy
 pillow
 opencv-python-headless
 gdown
+matplotlib
+scikit-learn
+pandas
+seaborn
+tqdm
