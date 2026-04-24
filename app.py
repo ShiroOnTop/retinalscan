@@ -16,7 +16,15 @@ from torchvision import transforms
 import torch
 
 from model import build_model
-from utils import load_checkpoint
+def load_checkpoint(model, checkpoint_path):
+    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+
+    if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
+        model.load_state_dict(checkpoint["model_state_dict"])
+    else:
+        model.load_state_dict(checkpoint)
+
+    return model
 
 # ── Config ───────────────────────────────────────────────────────────
 MODEL_PATH = "saved_model/best_model.pth"
