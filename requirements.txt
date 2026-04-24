@@ -1,12 +1,8 @@
+flask
+gunicorn
 torch
 torchvision
-scikit-learn
-matplotlib
-pandas
-pillow
-tqdm
-seaborn
-streamlit
-opencv-python-headless
 numpy
+pillow
+opencv-python-headless
 gdown
